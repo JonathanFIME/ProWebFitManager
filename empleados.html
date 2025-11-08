@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FitManager - Empleados</title>
+  <link rel="stylesheet" href="css/empleados.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="page-header" role="banner">
+      <div class="brand">
+        <img src="imagen/Fitlogo.png" alt="FitManager" class="logo">
+        <div>
+          <h1>Empleados</h1>
+          <p class="muted">Seleccione una opción</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="btn secondary" id="backBtn">Atrás</button>
+      </div>
+    </header>
+
+    <main class="page-main" id="main" tabindex="-1">
+
+      <div class="grid" style="margin-top:8px;">
+        <!-- Tabla principal de empleados -->
+        <section class="table-wrap" aria-labelledby="empleados-table-title">
+          <h2 id="empleados-table-title" class="sr-only">Lista de empleados</h2>
+
+          <div class="table-controls">
+            <div class="legend">Seleccione una fila para editar o eliminar</div>
+            <div class="actions">
+              <button class="btn primary" id="addBtn">Agregar</button>
+              <button class="btn" id="editBtn" disabled>Editar</button>
+              <button class="btn" id="deleteBtn" disabled>Eliminar</button>
+            </div>
+          </div>
+
+          <table class="empleados-table" role="table" aria-describedby="empleados-table-desc">
+            <caption id="empleados-table-desc" class="sr-only">Tabla de empleados con ID, Nombre, Estado, Rol y Horario</caption>
+            <thead>
+              <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Rol</th>
+                <th scope="col">Horario</th>
+              </tr>
+            </thead>
+            <tbody id="empleadosBody">
+              <tr data-id="1" tabindex="0">
+                <td>1</td>
+                <td>Jesus Hernandez Delgado</td>
+                <td><span class="status active">Activo</span></td>
+                <td>Recepcionista</td>
+                <td>L/M/J</td>
+              </tr>
+              <tr data-id="2" tabindex="0">
+                <td>2</td>
+                <td>Angel Sepulveda Millan</td>
+                <td><span class="status active">Activo</span></td>
+                <td>Recepcionista</td>
+                <td>L/M/J</td>
+              </tr>
+              <tr data-id="4" tabindex="0">
+                <td>4</td>
+                <td>Jonathan Ramos Carrillo</td>
+                <td><span class="status active">Activo</span></td>
+                <td>Recepcionista</td>
+                <td>L/M/J</td>
+              </tr>
+              <tr data-id="5" tabindex="0">
+                <td>5</td>
+                <td>Natalia Gonzalez Estrella</td>
+                <td><span class="status inactive">Inactivo</span></td>
+                <td>Recepcionista</td>
+                <td>L/M/J</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal diálogo (Agregar / Editar) -->
+  <div id="dialog" class="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="dialogTitle">
+    <div class="modal-panel" role="document">
+      <header class="modal-header">
+        <h3 id="dialogTitle">Agregar empleado</h3>
+        <button class="icon-btn" id="closeDialog" aria-label="Cerrar diálogo">×</button>
+      </header>
+
+      <form id="empleadoForm" class="modal-form" novalidate>
+        <input type="hidden" id="emp-id" name="id" />
+
+        <label>
+          <span>Nombre</span>
+          <input id="emp-nombre" name="nombre" type="text" required />
+          <span class="field-error" id="err-nombre" hidden>Campo obligatorio</span>
+        </label>
+
+        <label>
+          <span>Rol</span>
+          <select id="emp-rol" name="rol" required>
+            <option value="">Selecciona un rol</option>
+            <option value="Recepcionista">Recepcionista</option>
+            <option value="Entrenador">Entrenador</option>
+            <option value="Administrador">Administrador</option>
+          </select>
+          <span class="field-error" id="err-rol" hidden>Rellenar este campo</span>
+        </label>
+
+        <label>
+          <span>Horario</span>
+          <input id="emp-horario" name="horario" type="text" placeholder="Ej. L/M/J" required />
+          <span class="field-error" id="err-horario" hidden>Campo obligatorio</span>
+        </label>
+
+        <label class="row" aria-labelledby="estado-label">
+          <span id="estado-label">Estado</span>
+          <div class="toggle-group" role="radiogroup" aria-labelledby="estado-label">
+            <label class="inline"><input type="radio" name="estado" value="Activo" checked /> Activo</label>
+            <label class="inline"><input type="radio" name="estado" value="Inactivo" /> Inactivo</label>
+          </div>
+        </label>
+
+        <div class="form-actions">
+          <button type="submit" class="btn primary" id="saveBtn">Guardar</button>
+          <button type="button" class="btn" id="cancelBtn">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Confirmación Eliminar -->
+  <div id="confirmDialog" class="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="confirmTitle">
+    <div class="modal-panel" role="document" aria-describedby="confirmDesc" style="max-width:420px;">
+      <header class="modal-header">
+        <h3 id="confirmTitle">Esta seguro?</h3>
+      </header>
+      <div id="confirmDesc" style="margin:8px 0 14px;color:var(--muted);">
+        ¿Desea eliminar el registro seleccionado? Esta acción no se puede deshacer.
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;">
+        <button class="btn" id="confirmNo">No</button>
+        <button class="btn primary" id="confirmYes">Sí</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="overlay" class="overlay" hidden></div>
+  <div id="confirmOverlay" class="overlay" hidden></div>
+
+  <script>
+    (function(){
+      // Elementos principales
+      const tbody = document.getElementById('empleadosBody');
+      const addBtn = document.getElementById('addBtn');
+      const editBtn = document.getElementById('editBtn');
+      const deleteBtn = document.getElementById('deleteBtn');
+      const backBtn = document.getElementById('backBtn');
+
+      // Modal / form elements
+      const dialog = document.getElementById('dialog');
+      const overlay = document.getElementById('overlay');
+      const closeDialog = document.getElementById('closeDialog');
+      const cancelBtn = document.getElementById('cancelBtn');
+      const form = document.getElementById('empleadoForm');
+      const inputId = document.getElementById('emp-id');
+      const inputNombre = document.getElementById('emp-nombre');
+      const inputRol = document.getElementById('emp-rol');
+      const inputHorario = document.getElementById('emp-horario');
+      const errNombre = document.getElementById('err-nombre');
+      const errRol = document.getElementById('err-rol');
+      const errHorario = document.getElementById('err-horario');
+
+      // Confirm dialog elements
+      const confirmDialog = document.getElementById('confirmDialog');
+      const confirmOverlay = document.getElementById('confirmOverlay');
+      const confirmYes = document.getElementById('confirmYes');
+      const confirmNo = document.getElementById('confirmNo');
+
+      let selectedRow = null;
+
+      // Funciones de UI
+      function openDialog(mode, row = null){
+        clearValidation();
+        form.reset();
+        inputId.value = '';
+        document.getElementById('dialogTitle').textContent = mode === 'add' ? 'Agregar empleado' : 'Editar empleado';
+
+        if(mode === 'edit' && row){
+          inputId.value = row.dataset.id;
+          inputNombre.value = row.cells[1].textContent.trim();
+          inputHorario.value = row.cells[4].textContent.trim();
+          inputRol.value = row.cells[3].textContent.trim();
+          const estadoText = row.cells[2].textContent.trim();
+          Array.from(form.elements['estado']).forEach(r => r.checked = (r.value === estadoText));
+        }
+
+        dialog.setAttribute('aria-hidden', 'false');
+        dialog.style.display = 'flex';
+        overlay.hidden = false;
+        setTimeout(() => inputNombre.focus(), 50);
+      }
+
+      function closeModal(){
+        dialog.setAttribute('aria-hidden', 'true');
+        dialog.style.display = 'none';
+        overlay.hidden = true;
+      }
+
+      function openConfirm(){
+        confirmDialog.setAttribute('aria-hidden', 'false');
+        confirmDialog.style.display = 'flex';
+        confirmOverlay.hidden = false;
+        confirmYes.focus();
+      }
+
+      function closeConfirm(){
+        confirmDialog.setAttribute('aria-hidden', 'true');
+        confirmDialog.style.display = 'none';
+        confirmOverlay.hidden = true;
+      }
+
+      function selectRow(tr){
+        if(selectedRow) selectedRow.classList.remove('selected');
+        selectedRow = tr;
+        selectedRow.classList.add('selected');
+        editBtn.disabled = false;
+        deleteBtn.disabled = false;
+      }
+
+      function clearSelection(){
+        if(selectedRow) selectedRow.classList.remove('selected');
+        selectedRow = null;
+        editBtn.disabled = true;
+        deleteBtn.disabled = true;
+      }
+
+      // Selection via click / keyboard
+      tbody.addEventListener('click', (e) => {
+        const tr = e.target.closest('tr');
+        if(!tr) return;
+        selectRow(tr);
+      });
+      tbody.addEventListener('keydown', (e) => {
+        const tr = e.target.closest('tr');
+        if(!tr) return;
+        if(e.key === 'Enter') selectRow(tr);
+      });
+
+      // Botones principales
+      addBtn.addEventListener('click', () => openDialog('add'));
+      editBtn.addEventListener('click', () => {
+        if(!selectedRow) return;
+        openDialog('edit', selectedRow);
+      });
+      deleteBtn.addEventListener('click', () => {
+        if(!selectedRow) return;
+        openConfirm();
+      });
+      backBtn.addEventListener('click', () => window.location.href = 'admin.html');
+
+      // Modal controls
+      closeDialog.addEventListener('click', closeModal);
+      cancelBtn.addEventListener('click', closeModal);
+      overlay.addEventListener('click', closeModal);
+      document.addEventListener('keydown', (e) => {
+        if(e.key === 'Escape'){
+          if(dialog.getAttribute('aria-hidden') === 'false') closeModal();
+          if(confirmDialog.getAttribute('aria-hidden') === 'false') closeConfirm();
+        }
+      });
+
+      // Confirm controls
+      confirmNo.addEventListener('click', closeConfirm);
+      confirmOverlay.addEventListener('click', closeConfirm);
+
+      confirmYes.addEventListener('click', () => {
+        if(!selectedRow) { closeConfirm(); return; }
+        // Eliminar fila seleccionada
+        selectedRow.remove();
+        clearSelection();
+        closeConfirm();
+      });
+
+      // Validación helpers
+      function clearValidation(){
+        [errNombre, errRol, errHorario].forEach(el => {
+          if(!el) return;
+          el.hidden = true;
+        });
+        [inputNombre, inputRol, inputHorario].forEach(i => {
+          if(!i) return;
+          i.classList.remove('input-invalid');
+        });
+      }
+
+      function showValidation(input, errEl, message){
+        if(!errEl || !input) return;
+        errEl.textContent = message;
+        errEl.hidden = false;
+        input.classList.add('input-invalid');
+        input.focus();
+      }
+
+      // Form submit: validación y guardado (simulado)
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        clearValidation();
+
+        const id = inputId.value || '';
+        const nombre = inputNombre.value.trim();
+        const rol = inputRol.value;
+        const horario = inputHorario.value.trim();
+        const estado = form.elements['estado'].value || 'Activo';
+
+        if(!nombre){
+          showValidation(inputNombre, errNombre, 'Campo obligatorio');
+          return;
+        }
+        if(!rol){
+          showValidation(inputRol, errRol, 'Rellenar este campo');
+          return;
+        }
+        if(!horario){
+          showValidation(inputHorario, errHorario, 'Campo obligatorio');
+          return;
+        }
+
+        // Guardado simulado: editar o agregar fila
+        if(id){
+          const row = tbody.querySelector(`tr[data-id="${id}"]`);
+          if(row){
+            row.cells[1].textContent = nombre;
+            row.cells[2].innerHTML = `<span class="status ${estado === 'Activo' ? 'active' : 'inactive'}">${estado}</span>`;
+            row.cells[3].textContent = rol;
+            row.cells[4].textContent = horario;
+          }
+        } else {
+          const newId = Date.now();
+          const tr = document.createElement('tr');
+          tr.dataset.id = newId;
+          tr.tabIndex = 0;
+          tr.innerHTML = `
+            <td>${newId}</td>
+            <td>${escapeHtml(nombre)}</td>
+            <td><span class="status ${estado === 'Activo' ? 'active' : 'inactive'}">${estado}</span></td>
+            <td>${escapeHtml(rol)}</td>
+            <td>${escapeHtml(horario)}</td>
+          `;
+          tbody.appendChild(tr);
+          // auto seleccionar nuevo registro
+          selectRow(tr);
+        }
+
+        closeModal();
+      });
+
+      // Limpiar error cuando el usuario escribe / cambia
+      [inputNombre, inputHorario].forEach(inp => {
+        inp.addEventListener('input', () => {
+          if(inp.value.trim()) {
+            const err = document.getElementById('err-' + inp.id.split('-')[1]);
+            if(err) { err.hidden = true; inp.classList.remove('input-invalid'); }
+          }
+        });
+      });
+      inputRol.addEventListener('change', () => {
+        if(inputRol.value) { errRol.hidden = true; inputRol.classList.remove('input-invalid'); }
+      });
+
+      // Utilidad escape
+      function escapeHtml(s){
+        return String(s).replace(/[&<>"']/g, (m) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+      }
+    })();
+  </script>
+</body>
+</html>

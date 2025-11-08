@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FitManager - Admin</title>
+  <link rel="stylesheet" href="css/adminstyle.css">
+</head>
+<body>
+  <div class="admin-shell">
+    <header class="admin-header" role="banner">
+      <div class="header-left">
+        <img src="imagen/Fitlogo.png" alt="FitManager" class="logo" />
+        <div class="title-block">
+          <h1 class="app-title">FitManager</h1>
+          <p class="subtitle">Panel de Administrador</p>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div class="profile">
+          <button id="profileBtn" class="profile-btn" aria-haspopup="true" aria-expanded="false" aria-controls="profileMenu">
+            <img src="imagen/avatar-default.png" alt="Perfil del administrador" class="avatar" id="headerAvatar">
+            <span class="visually-hidden">Abrir menú de perfil</span>
+          </button>
+
+          <div id="profileMenu" class="profile-menu" role="menu" aria-labelledby="profileBtn" aria-hidden="true">
+            <div class="profile-info" role="none">
+              <img src="imagen/avatar-default.png" alt="" class="menu-avatar" id="menuAvatar" aria-hidden="true">
+              <div class="menu-text">
+                <div class="menu-name" id="menuAdminName">Admin</div>
+                <div class="menu-role">Administrador</div>
+              </div>
+            </div>
+
+            <button class="menu-item" role="menuitem" id="viewProfileBtn">Ver perfil</button>
+            <button class="menu-item" role="menuitem" id="editProfileBtn">Editar perfil</button>
+            <button class="menu-item" role="menuitem" id="editPhotoBtn">Editar foto</button>
+            <hr class="menu-divider" />
+            <button class="menu-item danger" role="menuitem" id="signoutBtnMenu">Cerrar sesión</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="admin-main" id="main" tabindex="-1">
+      <section class="welcome-card" aria-labelledby="welcome-title">
+        <div class="welcome-left">
+          <h2 id="welcome-title">
+            Bienvenido <span id="admin-name">[NOMBRE]</span>
+            <span class="role-pill">Admin</span>
+          </h2>
+          <p class="welcome-sub">Accede rápidamente a las secciones principales del sistema.</p>
+        </div>
+
+        <nav class="quick-actions" aria-label="Acciones rápidas del administrador">
+          <button class="action-btn large" data-target="empleados.html">Empleados</button>
+          <button class="action-btn large" data-target="clientes.html">Clientes</button>
+          <button class="action-btn large" data-target="ventas.html">Ventas</button>
+          <button class="action-btn large" data-target="products.html">Productos</button>
+        </nav>
+      </section>
+
+      <section class="hint" aria-hidden="true">
+        <small>Usa los botones para navegar a cada sección.</small>
+      </section>
+    </main>
+  </div>
+
+  <!-- Overlay / Modal: Ver perfil -->
+  <div id="overlayView" class="overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="viewTitle">
+      <div class="modal-header">
+        <div class="modal-title" id="viewTitle">Perfil del administrador</div>
+        <button class="modal-close" data-close aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="profile-grid">
+        <img src="imagen/avatar-default.png" alt="Foto de perfil" class="menu-avatar" id="viewAvatar">
+        <div>
+          <div style="font-weight:800;font-size:1.05rem" id="viewName">Admin</div>
+          <div style="color:rgba(15,23,32,0.6);margin-bottom:10px" id="viewRole">Administrador</div>
+
+          <div><strong>Dirección</strong><div id="viewDireccion" style="margin-top:6px;color:rgba(15,23,32,0.8)"></div></div>
+          <div style="margin-top:8px"><strong>Teléfono</strong><div id="viewTelefono" style="margin-top:6px;color:rgba(15,23,32,0.8)"></div></div>
+          <div style="margin-top:8px"><strong>Correo</strong><div id="viewCorreo" style="margin-top:6px;color:rgba(15,23,32,0.8)"></div></div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn secondary" data-close>Cerrar</button>
+        <button class="btn primary" id="openEditFromView">Editar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Overlay / Modal: Editar perfil -->
+  <div id="overlayEdit" class="overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="editTitle">
+      <div class="modal-header">
+        <div class="modal-title" id="editTitle">Editar perfil</div>
+        <button class="modal-close" data-close aria-label="Cerrar">&times;</button>
+      </div>
+
+      <form id="editForm" novalidate>
+        <div class="profile-grid">
+          <div>
+            <img src="imagen/avatar-default.png" alt="Foto de perfil" class="menu-avatar" id="editAvatarPreview">
+            <label class="upload-hint" for="editAvatarInput">Cambiar foto (opcional)</label>
+            <input type="file" id="editAvatarInput" accept="image/*" aria-label="Subir foto de perfil" />
+            <div class="upload-hint">PNG, JPG. Máx 2MB.</div>
+          </div>
+
+          <div>
+            <div class="form-row">
+              <label for="nombreInput">Nombre completo</label>
+              <input id="nombreInput" name="nombre" type="text" required />
+              <div class="field-error" id="errorNombre">Este campo es obligatorio</div>
+            </div>
+
+            <div class="form-row">
+              <label for="direccionInput">Dirección</label>
+              <input id="direccionInput" name="direccion" type="text" required />
+              <div class="field-error" id="errorDireccion">Este campo es obligatorio</div>
+            </div>
+
+            <div class="form-row">
+              <label for="telefonoInput">Teléfono</label>
+              <input id="telefonoInput" name="telefono" type="tel" pattern="^[0-9()+\s-]{6,25}$" required />
+              <div class="field-error" id="errorTelefono">Introduce un teléfono válido</div>
+            </div>
+
+            <div class="form-row">
+              <label for="correoInput">Correo electrónico</label>
+              <input id="correoInput" name="correo" type="email" required />
+              <div class="field-error" id="errorCorreo">Introduce un correo válido</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn secondary" data-close>Cancelar</button>
+          <button type="submit" class="btn primary">Guardar cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/admininteract.js"></script>
+</body>
+</html>

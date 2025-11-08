@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FitManager - Empleado</title>
+  <link rel="stylesheet" href="css/employed.css">
+</head>
+<body>
+  <div class="page-bg">
+    <main class="center-card" id="employeeShell" tabindex="-1" role="main" aria-label="Panel empleado">
+      <header class="products-header">
+        <div>
+          <div class="products-title">Panel empleado</div>
+          <div class="small-muted">Accesos rápidos</div>
+        </div>
+
+        <div class="prod-toolbar">
+          <button id="logoutBtn" class="btn-inline btn-delete" aria-label="Cerrar sesión">Cerrar sesión</button>
+        </div>
+      </header>
+
+      <section class="table-wrap" aria-label="Perfil de empleado" style="display:flex;justify-content:center">
+        <div class="employee-center" role="region" aria-label="Información del empleado">
+          <div class="emp-portrait" aria-hidden="false">
+            <img id="empAvatar" src="imagen/avatar-placeholder.png" alt="Foto del empleado" />
+          </div>
+
+          <div class="emp-name" id="empNombre">Empleado</div>
+
+          <div class="clock-box" id="empClock" aria-live="polite" aria-atomic="true">--:--:--</div>
+
+          <nav class="emp-actions" role="navigation" aria-label="Acciones rápidas">
+            <a href="ventas.html" class="btn-emp" id="openVentas">Ventas</a>
+            <a href="clients_alt.html" class="btn-emp" id="openClientes">Clientes</a>
+          </nav>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/empleado.js"></script>
+</body>
+</html>

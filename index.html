@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FitManager - Iniciar Sesión</title>
+  <link rel="stylesheet" href="css/indexstyle.css">
+</head>
+<body>
+  <main class="page">
+    <section class="login-wrapper">
+      <div class="login-box" role="dialog" aria-labelledby="login-title">
+        <div class="brand-wrap" aria-hidden="true">
+          <img src="imagen/Fitlogo.png" alt="FitManager" />
+        </div>
+
+        <div class="inner">
+          <h1 id="login-title" class="title">FitManager</h1>
+          <div class="subtitle">Accede con tu No. ID y contraseña</div>
+
+          <form id="loginForm" class="login-form" action="#" method="post" novalidate>
+            <div>
+              <label for="user-id">No. ID</label>
+              <input id="user-id" name="user-id" type="text" inputmode="numeric" placeholder="Ej. 123456" required aria-required="true" />
+            </div>
+
+            <div>
+              <label for="password">Contraseña</label>
+              <input id="password" name="password" type="password" placeholder="Escribe tu contraseña" required aria-required="true" />
+            </div>
+
+            <button type="submit" class="btn">Ingresar</button>
+
+            <div id="alert" class="alert" role="alert" aria-live="assertive"></div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function(){
+      const form = document.getElementById('loginForm');
+      const alertBox = document.getElementById('alert');
+
+      function showAlert(message){
+        alertBox.textContent = message;
+        alertBox.classList.add('show');
+      }
+      function hideAlert(){
+        alertBox.textContent = '';
+        alertBox.classList.remove('show');
+      }
+
+      // MAP SIMULADO: userId -> role
+      // roles: 'admin' | 'empleado'
+      // Ejemplos: 9001 -> admin, 1001/1002/123456 -> empleado
+      function simulateDbLookup(userId){
+        const map = {
+          '9001': 'admin',
+          '1001': 'empleado',
+          '1002': 'empleado',
+          '123456': 'empleado'
+        };
+        return map[userId] || null;
+      }
+
+      // Contraseñas simuladas por role (solo demo)
+      const rolePasswords = {
+        'admin': 'admin123',
+        'empleado': 'empleado123'
+      };
+
+      form.addEventListener('submit', function(e){
+        e.preventDefault();
+        hideAlert();
+
+        const userId = form['user-id'].value.trim();
+        const password = form['password'].value;
+
+        if(!userId){
+          showAlert('Ingresa tu No. ID.');
+          form['user-id'].focus();
+          return;
+        }
+        if(!/^\d{4,}$/.test(userId)){
+          showAlert('El No. ID debe contener al menos 4 dígitos.');
+          form['user-id'].focus();
+          return;
+        }
+        if(!password){
+          showAlert('Ingresa tu contraseña.');
+          form['password'].focus();
+          return;
+        }
+        if(password.length < 6){
+          showAlert('La contraseña debe tener al menos 6 caracteres.');
+          form['password'].focus();
+          return;
+        }
+
+        const role = simulateDbLookup(userId);
+
+        if(!role){
+          showAlert('Usuario no encontrado. Verifica tu No. ID.');
+          return;
+        }
+
+        if(password !== rolePasswords[role]){
+          showAlert('Usuario o contraseña incorrectos. Verifica e intenta de nuevo.');
+          return;
+        }
+
+        hideAlert();
+
+        // Redirección según role (simulación)
+        if(role === 'admin'){
+          window.location.href = 'admin.html';
+        } else {
+          window.location.href = 'empleado.html';
+        }
+      });
+
+      // Mejora de accesibilidad: enfocar main tras redirección simulada
+      window.addEventListener('pageshow', () => {
+        const main = document.querySelector('main');
+        if (main) main.setAttribute('tabindex', '-1');
+      });
+    })();
+  </script>
+</body>
+</html>
+

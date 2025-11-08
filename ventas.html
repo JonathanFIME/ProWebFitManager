@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FitManager - Ventas</title>
+  <link rel="stylesheet" href="css/products.css">
+  <style>
+    /* Teclado numérico dentro del modal */
+    .payment-grid{
+      display:grid;
+      grid-template-columns: 1fr 120px;
+      gap:12px;
+      align-items:start;
+    }
+
+    .num-pad{
+      display:grid;
+      grid-template-columns: repeat(3, 64px);
+      gap:8px;
+      margin-top:8px;
+    }
+    .num-key{
+      width:64px;
+      height:48px;
+      border-radius:8px;
+      background:#f3f3f3;
+      border:1px solid rgba(16,24,40,0.06);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:800;
+      font-size:1.05rem;
+      cursor:pointer;
+    }
+    .num-key:active{ transform: translateY(1px); }
+    .num-key.action{ background: var(--accent); color: var(--primary); }
+    .num-key.wide{ grid-column: span 3; width:100%; }
+
+    /* Botones verticales a la derecha del pad */
+    .pad-actions{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      align-items:stretch;
+      justify-content:flex-start;
+    }
+    .pad-actions .btn{
+      min-width:120px;
+      padding:10px 12px;
+      border-radius:10px;
+      font-weight:800;
+      cursor:pointer;
+      border:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .pad-actions .btn.cancel{ background:#ffffff; border:1px solid rgba(16,24,40,0.08); color:var(--danger); }
+    .pad-actions .btn.accept{ background:var(--primary); color:#fff; }
+
+    @media (max-width:560px){
+      .payment-grid{ grid-template-columns: 1fr; }
+      .pad-actions{ flex-direction:row; gap:8px; justify-content:flex-end; }
+      .num-pad{ grid-template-columns: repeat(3, 1fr); }
+      .num-key{ height:44px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-bg">
+    <main class="center-card" id="salesShell">
+      <header class="products-header">
+        <div>
+          <div class="products-title">Ventas</div>
+          <div class="small-muted">Caja: selecciona productos disponibles y confirma la venta</div>
+        </div>
+
+        <div class="prod-toolbar">
+          <input id="searchProducts" class="search-input" type="search" placeholder="Buscar nombre/ID de producto" aria-label="Buscar producto disponible">
+          <button id="backBtn" class="btn-inline btn-delete">Atrás</button>
+        </div>
+      </header>
+
+      <section class="table-wrap" aria-live="polite">
+        <table class="products-table" id="availableTable" aria-describedby="availDesc">
+          <caption id="availDesc" class="small-muted" style="text-align:left;padding-bottom:8px">Productos disponibles</caption>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Stock</th>
+              <th>Precio unitario</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="availableTbody"></tbody>
+        </table>
+      </section>
+
+      <div style="height:16px"></div>
+
+      <section class="table-wrap" aria-live="polite">
+        <table class="products-table" id="cartTable" aria-describedby="cartDesc">
+          <caption id="cartDesc" class="small-muted" style="text-align:left;padding-bottom:8px">Venta actual</caption>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Cantidad</th>
+              <th>Precio unitario</th>
+              <th>Subtotal</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="cartTbody"></tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3" style="text-align:right;padding:12px;font-weight:800">Total:</td>
+              <td id="cartTotal" style="font-weight:800;color:var(--primary)">$0.00</td>
+              <td></td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px;position:relative;">
+          <button id="clearCartBtn" class="btn-inline btn-delete">Limpiar</button>
+          <button id="confirmSaleBtn" class="btn-inline btn-add">Confirmar</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal pago / calculadora (efectivo único) -->
+  <div id="paymentOverlay" class="overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="paymentTitle">
+      <div class="modal-header">
+        <div class="modal-title" id="paymentTitle">Pago en efectivo</div>
+        <button class="modal-close" data-close aria-label="Cerrar">&times;</button>
+      </div>
+
+      <div style="display:flex;gap:16px;flex-direction:column">
+        <div style="font-weight:800;font-size:1.05rem">Total a pagar: <span id="payTotal" style="color:var(--primary)">$0.00</span></div>
+
+        <div class="payment-grid">
+          <div>
+            <div>
+              <label for="receivedInput" style="font-weight:700;display:block;margin-bottom:6px">Cantidad recibida</label>
+              <input id="receivedInput" type="text" inputmode="decimal" pattern="[0-9.]*" style="padding:10px;border:1px solid rgba(16,24,40,0.08);border-radius:8px;width:200px" aria-label="Cantidad recibida" />
+            </div>
+
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+              <button class="btn-inline btn-edit quick-calc" data-add="50">+50</button>
+              <button class="btn-inline btn-edit quick-calc" data-add="100">+100</button>
+              <button class="btn-inline btn-edit quick-calc" data-add="200">+200</button>
+              <button class="btn-inline btn-edit quick-calc" data-add="500">+500</button>
+              <button class="btn-inline btn-add" id="calcExactBtn">Usar exacto</button>
+            </div>
+
+            <!-- Teclado numérico -->
+            <div class="num-pad" aria-hidden="false" id="numPad">
+              <button type="button" class="num-key">1</button>
+              <button type="button" class="num-key">2</button>
+              <button type="button" class="num-key">3</button>
+              <button type="button" class="num-key">4</button>
+              <button type="button" class="num-key">5</button>
+              <button type="button" class="num-key">6</button>
+              <button type="button" class="num-key">7</button>
+              <button type="button" class="num-key">8</button>
+              <button type="button" class="num-key">9</button>
+              <button type="button" class="num-key action" id="numDot">.</button>
+              <button type="button" class="num-key">0</button>
+              <button type="button" class="num-key action" id="numClear">C</button>
+            </div>
+          </div>
+
+          <div class="pad-actions" aria-hidden="false">
+            <button class="btn cancel" data-close type="button">Cancelar</button>
+            <button class="btn accept" id="completeSaleBtn" type="button">Finalizar</button>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:12px;align-items:center;margin-top:8px">
+          <div style="font-weight:700">Resultado:</div>
+          <div id="payResult" style="font-weight:800;color:var(--primary)">$0.00</div>
+          <div id="payChange" style="font-weight:700;color:var(--danger)"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="js/ventas.js"></script>
+</body>
+</html>

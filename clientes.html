@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FitManager - Clientes</title>
+  <link rel="stylesheet" href="css/clientes.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="page-header" role="banner">
+      <div class="brand">
+        <img src="imagen/Fitlogo.png" alt="FitManager" class="logo">
+        <div>
+          <h1>FitManager</h1>
+          <p class="subtitle">Clientes</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button class="btn secondary" id="backBtn">Atrás</button>
+      </div>
+    </header>
+
+    <main class="page-main" id="main" tabindex="-1">
+      <section class="search-card" aria-label="Buscar cliente">
+        <label for="search" class="sr-only">Buscar cliente</label>
+        <input id="search" type="search" placeholder="Buscar nombre/ID de cliente" />
+      </section>
+
+      <section class="table-card" aria-labelledby="clientes-title">
+        <h2 id="clientes-title" class="sr-only">Lista de clientes</h2>
+
+        <div class="table-controls">
+          <div class="legend">Resultados</div>
+          <div class="actions">
+            <button class="btn primary" id="addBtn">Agregar</button>
+            <button class="btn" id="editBtn" disabled>Editar</button>
+            <button class="btn danger" id="deleteBtn" disabled>Eliminar</button>
+          </div>
+        </div>
+
+        <table class="clientes-table" role="table" aria-describedby="clientes-desc">
+          <caption id="clientes-desc" class="sr-only">Tabla de clientes con ID, Nombre, Teléfono, Correo, Membresía y Fechas</caption>
+          <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">Nombre</th>
+              <th scope="col">Teléfono</th>
+              <th scope="col">Correo</th>
+              <th scope="col">Membresía</th>
+              <th scope="col">Fecha inicio</th>
+              <th scope="col">Fecha fin</th>
+              <th scope="col">Fecha ingreso</th>
+            </tr>
+          </thead>
+          <tbody id="clientesBody">
+            <tr data-id="2" tabindex="0">
+              <td>2</td>
+              <td>Jesus Hernandez Delgado</td>
+              <td>1122394545</td>
+              <td>jhes@example.com</td>
+              <td>Prueba</td>
+              <td>01/08/2025</td>
+              <td>02/08/2025</td>
+              <td>01/08/2025</td>
+            </tr>
+
+            <tr data-id="3" tabindex="0">
+              <td>3</td>
+              <td>Angel Sepulveda Millan</td>
+              <td>1122394545</td>
+              <td>asep@example.com</td>
+              <td>Prueba</td>
+              <td>15/07/2025</td>
+              <td>16/07/2025</td>
+              <td>15/07/2025</td>
+            </tr>
+
+            <tr data-id="4" tabindex="0">
+              <td>4</td>
+              <td>Jonathan Ramos Carrillo</td>
+              <td>1122394545</td>
+              <td>jramos@example.com</td>
+              <td>Anual</td>
+              <td>10/01/2024</td>
+              <td>10/01/2025</td>
+              <td>10/01/2024</td>
+            </tr>
+
+            <tr data-id="5" tabindex="0">
+              <td>5</td>
+              <td>Eduardo Carrillo Banda</td>
+              <td>1122394545</td>
+              <td>ecarr@example.com</td>
+              <td>Anual</td>
+              <td>05/05/2023</td>
+              <td>05/05/2024</td>
+              <td>05/05/2023</td>
+            </tr>
+
+            <tr data-id="6" tabindex="0">
+              <td>6</td>
+              <td>Natalina Quintanilla Esquivel</td>
+              <td>1122394545</td>
+              <td>nquin@example.com</td>
+              <td>Mensual</td>
+              <td>20/09/2025</td>
+              <td>20/10/2025</td>
+              <td>20/09/2025</td>
+            </tr>
+          </tbody>
+        </table>
+
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal Agregar / Editar cliente -->
+  <div id="dialog" class="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="dialogTitle">
+    <div class="modal-panel" role="document">
+      <header class="modal-header">
+        <h3 id="dialogTitle">Agregar cliente</h3>
+        <button class="icon-btn" id="closeDialog" aria-label="Cerrar diálogo">×</button>
+      </header>
+
+      <form id="clienteForm" class="modal-form" novalidate>
+        <input type="hidden" id="cli-id" name="id" />
+
+        <label>
+          <span>Nombre</span>
+          <input id="cli-nombre" name="nombre" type="text" required />
+          <span class="field-error" id="err-nombre" hidden>Campo obligatorio</span>
+        </label>
+
+        <label>
+          <span>Teléfono</span>
+          <input id="cli-telefono" name="telefono" type="text" required />
+          <span class="field-error" id="err-telefono" hidden>Campo obligatorio</span>
+        </label>
+
+        <label>
+          <span>Correo</span>
+          <input id="cli-correo" name="correo" type="email" required />
+          <span class="field-error" id="err-correo" hidden>Campo obligatorio</span>
+        </label>
+
+        <label>
+          <span>Membresía</span>
+          <select id="cli-membresia" name="membresia" required>
+            <option value="">Selecciona una membresía</option>
+            <option value="Prueba">Prueba</option>
+            <option value="Mensual">Mensual</option>
+            <option value="Anual">Anual</option>
+          </select>
+          <span class="field-error" id="err-membresia" hidden>Rellenar este campo</span>
+        </label>
+
+        <label>
+          <span>Fecha inicio</span>
+          <input id="cli-inicio" name="inicio" type="date" required readonly />
+          <span class="field-error" id="err-inicio" hidden>Campo obligatorio</span>
+        </label>
+
+        <label>
+          <span>Fecha fin</span>
+          <input id="cli-fin" name="fin" type="date" required readonly />
+          <span class="field-error" id="err-fin" hidden>Campo obligatorio</span>
+        </label>
+
+        <label>
+          <span>Fecha ingreso</span>
+          <input id="cli-ingreso" name="ingreso" type="date" required readonly />
+          <span class="field-error" id="err-ingreso" hidden>Campo obligatorio</span>
+        </label>
+
+        <div class="form-actions">
+          <button type="submit" class="btn primary" id="saveBtn">Guardar</button>
+          <button type="button" class="btn" id="cancelBtn">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Confirmación Eliminar -->
+  <div id="confirmDialog" class="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="confirmTitle">
+    <div class="modal-panel" role="document" style="max-width:420px;">
+      <header class="modal-header">
+        <h3 id="confirmTitle">¿Está seguro?</h3>
+      </header>
+      <div id="confirmDesc" class="confirm-text">
+        ¿Desea eliminar el registro seleccionado? Esta acción no se puede deshacer.
+      </div>
+      <div class="confirm-actions">
+        <button class="btn" id="confirmNo">No</button>
+        <button class="btn primary" id="confirmYes">Sí</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="overlay" class="overlay" hidden></div>
+  <div id="confirmOverlay" class="overlay" hidden></div>
+
+  <script src="js/clients.js"></script>
+</body>
+</html>
